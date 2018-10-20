@@ -2,7 +2,6 @@ import {Body, Controller, Get, injectMethods, Param, Post, setBaseUrl} from "../
 
 setBaseUrl('http://127.0.0.1:3000');
 
-
 @Controller('animal')
 class Animal {
   constructor() {
