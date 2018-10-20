@@ -1,6 +1,6 @@
 {
   "name": "nest-client",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "nest.js client stub library",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
