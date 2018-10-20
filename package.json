@@ -8,6 +8,7 @@
     "clean": "rimraf dist",
     "prebuild": "npm run clean",
     "build": "gen-index && tsc -p .",
+    "prelint": "npm run format",
     "lint": "tslint -p .",
     "format": "prettier --write \"src/**/*.ts\"",
     "postformat": "tslint -p . --fix",

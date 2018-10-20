@@ -1,4 +1,4 @@
-import axios, { AxiosPromise } from 'axios';
+import axios from 'axios';
 import {
   bodies,
   getControllerMethodParams,
@@ -152,18 +152,30 @@ export function injectMethods (instance: object) {
       }
 
       const url = baseUrl + localRestUrl;
-      return (axios[restfulMethod](url, data) as AxiosPromise).then(
-        (response) => {
+      return axios
+        .request({
+          url,
+          method: restfulMethod,
+          data,
+        })
+        .then((response) => {
           if (response.status === 200) {
             return response.data;
           } else {
             return Promise.reject(response);
           }
-        },
-      );
+        });
     }.bind(instance);
   }
 }
 
-export const Post = restMethod('Post');
+/* without data */
+export const Delete = restMethod('Delete');
 export const Get = restMethod('Get');
+export const Head = restMethod('Head');
+export const Options = restMethod('Options');
+
+/* with data */
+export const Post = restMethod('Post');
+export const Put = restMethod('Put');
+export const Patch = restMethod('Patch');
