@@ -1,0 +1,6 @@
+#!/bin/bash
+set -e
+npm i
+node ./mk-package.js > dist/package.json
+cp README.md dist/
+echo "done build-lib."

@@ -1,0 +1,23 @@
+#!/bin/bash
+set -e
+
+res=$(git status | grep "nothing to commit" | wc -l)
+if [ "$res" != 1 ]; then
+  echo "Error: unclean working directory, please commit changes first."
+  exit 1
+fi
+
+./auto-init
+
+if [ $# == 1 ]; then
+  t=$1
+else
+  echo -n "update type `npm version --help | grep -oh \"\\\[.*]\"`: "; read t
+fi
+npm test
+rm -rf package-lock.json
+npm version "$t"
+./build-lib
+cd dist
+npm publish
+git push --follow-tags
