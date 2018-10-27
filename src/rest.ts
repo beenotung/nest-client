@@ -74,7 +74,7 @@ export function Body (bodyName: string) {
   };
 }
 
-export function injectMethods (instance: object) {
+export function injectNestClient (instance: object) {
   const target = Object.getPrototypeOf(instance);
   for (const method of Object.getOwnPropertyNames(target)) {
     if (method === 'constructor') {
@@ -144,7 +144,9 @@ export function injectMethods (instance: object) {
                 `failed to replace ':${restParamName}' in '${localRestUrl}'`,
               );
               console.error(
-                `next one is :'${localRestUrl[idx + 1 + restParamName.length]}'`,
+                `next one is :'${
+                  localRestUrl[idx + 1 + restParamName.length]
+                }'`,
               );
               break;
           }
@@ -168,6 +170,8 @@ export function injectMethods (instance: object) {
     }.bind(instance);
   }
 }
+/**@deprecated*/
+export let injectMethods = injectNestClient;
 
 /* without data */
 export const Delete = restMethod('Delete');

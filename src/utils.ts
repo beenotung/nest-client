@@ -14,9 +14,11 @@ export function mapGetOrSet<K, V> (map: Map<K, V>, key: K, f: () => V) {
 }
 
 export function chainF (f: Function, acc: any, argsList: any[][]) {
+  /*
   if (argsList.length === 0) {
     throw new Error('no args List');
   }
+  */
   for (const args of argsList) {
     acc = f(acc, ...args);
   }
