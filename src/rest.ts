@@ -5,6 +5,7 @@ import {
   getControllerMethodPath,
   getControllerPath,
   hasControllerMethodParams,
+  hasControllerMethodPath,
   params,
   setControllerMethodParam,
   setControllerMethodPath,
@@ -74,13 +75,27 @@ export function Body (bodyName: string) {
   };
 }
 
-export function injectNestClient (instance: object) {
+export interface NestClientOptions {
+  allowNonRestMethods: boolean;
+}
+
+export function injectNestClient (
+  instance: object,
+  options?: NestClientOptions,
+) {
   const target = Object.getPrototypeOf(instance);
+  const controllerPath = getControllerPath(target.constructor);
   for (const method of Object.getOwnPropertyNames(target)) {
     if (method === 'constructor') {
       continue;
     }
-    const controllerPath = getControllerPath(target.constructor);
+    if (
+      options &&
+      options.allowNonRestMethods &&
+      !hasControllerMethodPath(target, method)
+    ) {
+      continue;
+    }
     const [restMethod, methodPath] = getControllerMethodPath(target, method);
     const restfulMethod = restMethod.name.toLowerCase();
     if (!axios[restfulMethod]) {
@@ -144,9 +159,7 @@ export function injectNestClient (instance: object) {
                 `failed to replace ':${restParamName}' in '${localRestUrl}'`,
               );
               console.error(
-                `next one is :'${
-                  localRestUrl[idx + 1 + restParamName.length]
-                }'`,
+                `next one is :'${localRestUrl[idx + 1 + restParamName.length]}'`,
               );
               break;
           }
@@ -170,6 +183,7 @@ export function injectNestClient (instance: object) {
     }.bind(instance);
   }
 }
+
 /**@deprecated*/
 export let injectMethods = injectNestClient;
 

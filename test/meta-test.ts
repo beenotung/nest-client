@@ -5,7 +5,7 @@ setBaseUrl('http://127.0.0.1:3000');
 @Controller('animal')
 class Animal {
   constructor() {
-    injectNestClient(this);
+    injectNestClient(this, {allowNonRestMethods: true});
   }
 
   @Post('talk')
@@ -24,6 +24,9 @@ class Animal {
 
   @Post('/post_echo')
   post_echo(@Body('Msg')Msg) {
+  }
+
+  customMethod() {
   }
 }
 

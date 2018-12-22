@@ -47,6 +47,20 @@ export function setControllerMethodPath (
   map.set(restMethod, path);
 }
 
+export function hasControllerMethodPath (
+  target: object,
+  method: PropertyKey,
+): boolean {
+  if (!methods.has(target)) {
+    return false;
+  }
+  const m = methods.get(target);
+  if (!m.has(method)) {
+    return false;
+  }
+  return m.get(method).size > 0;
+}
+
 export function getControllerMethodPath (
   target: object,
   method: PropertyKey,
