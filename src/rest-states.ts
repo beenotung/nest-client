@@ -106,11 +106,10 @@ export function hasControllerMethodParams (
   target: object,
   method: PropertyKey,
 ): boolean {
-  const methods = chainF(mapGetOrSet, params, [[target]]) as Map<
-    PropertyKey,
-    any
-  >;
-  return methods.has(method);
+  if (!params.has(target)) {
+    return false;
+  }
+  return (params.get(target) as Map<PropertyKey, any>).has(method);
 }
 
 export function getControllerMethodParams (
