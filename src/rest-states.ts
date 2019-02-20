@@ -19,7 +19,7 @@ export const params = new Map<
 /* class -> method -> bodyIdx -> [bodyName, restBodyName] */
 export const bodies = new Map<
   object,
-  Map<PropertyKey, Map<number, [string, string]>>
+  Map<PropertyKey, Map<number, [string, string | undefined]>>
 >();
 
 export function setControllerPath (target: object, path: string) {
@@ -92,7 +92,7 @@ export function setControllerMethodParam (
   method: PropertyKey,
   paramIdx: number,
   paramName: string,
-  restParamName: string,
+  restParamName?: string,
 ) {
   const map = chainF(mapGetOrSet, params, [
     [target, genMap],

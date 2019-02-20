@@ -13,13 +13,13 @@ import {
 } from './rest-states';
 import { functionParams } from './utils';
 
-let baseUrl = '';
+let defaultBaseUrl = '';
 
 export function setBaseUrl (url: string) {
   if (url.endsWith('/')) {
     url = url.substr(0, url.length - 1);
   }
-  baseUrl = url;
+  defaultBaseUrl = url;
 }
 
 export function Controller (path: string) {
@@ -60,7 +60,7 @@ export function Param (restParamName: string) {
   };
 }
 
-export function Body (bodyName: string) {
+export function Body (bodyName?: string) {
   return function (target: object, method: PropertyKey, paramIdx: number) {
     const funcParams = functionParams(target[method]);
     const funcParamName = funcParams[paramIdx];
@@ -76,7 +76,8 @@ export function Body (bodyName: string) {
 }
 
 export interface NestClientOptions {
-  allowNonRestMethods: boolean;
+  allowNonRestMethods?: false | boolean;
+  baseUrl?: string;
 }
 
 export function injectNestClient (
@@ -168,7 +169,7 @@ export function injectNestClient (
         }
       }
 
-      const url = baseUrl + localRestUrl;
+      const url = (options.baseUrl || defaultBaseUrl) + localRestUrl;
       return axios
         .request({
           url,
