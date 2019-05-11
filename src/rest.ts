@@ -111,7 +111,7 @@ export function injectNestClient (
     const oriParams = functionParams(oriMethod);
     instance[method] = function () {
       let localRestUrl = restUrl;
-      const data = {};
+      let data = {};
 
       if (oriParams.length > 0) {
         let ps: Map<any, any>;
@@ -139,7 +139,14 @@ export function injectNestClient (
           }
 
           /* for post */
-          data[restParamName] = paramValue;
+          if (restParamName) {
+            /* assigned named field on body */
+            data[restParamName] = paramValue;
+          } else {
+            /* assign as the entire body */
+            data = paramValue;
+            continue;
+          }
 
           /* for get */
           const idx = localRestUrl.indexOf(':' + restParamName);
