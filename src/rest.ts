@@ -176,7 +176,11 @@ export function injectNestClient (
         }
       }
 
-      const url = (options.baseUrl || defaultBaseUrl) + localRestUrl;
+      let baseUrl = defaultBaseUrl;
+      if (options && options.baseUrl) {
+        baseUrl = options.baseUrl;
+      }
+      const url = baseUrl + localRestUrl;
       return axios
         .request({
           url,
