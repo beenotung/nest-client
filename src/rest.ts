@@ -211,3 +211,63 @@ export const Options = restMethod('Options');
 export const Post = restMethod('Post');
 export const Put = restMethod('Put');
 export const Patch = restMethod('Patch');
+
+/* for multi-part form post to upload file(s) */
+export function UseInterceptors (
+  ...interceptors: Array<
+    (target: object, key?: string, descriptor?: any) => void
+  >
+) {
+  console.log('[debug]');
+  return function (target: object, key?: string, descriptor?: any) {
+    console.log('[debug]');
+    console.log({
+      target,
+      key,
+      descriptor,
+      interceptors,
+    });
+    interceptors.forEach((interceptor) => interceptor(target, key, descriptor));
+  };
+}
+
+export function FileInterceptor (fieldName: string, localOptions?: object) {
+  console.log('[debug]', 'FileInterceptor', fieldName);
+  return function (target: object, method: PropertyKey, paramIdx: number) {
+    console.log('[debug]');
+  };
+}
+
+export function FilesInterceptor (fieldName: string, localOptions?: object) {
+  console.log('[debug]', 'FilesInterceptor', fieldName);
+  return function (target: object, method: PropertyKey, paramIdx: number) {
+    console.log('[debug]');
+    console.log({
+      target,
+      method,
+      paramIdx,
+      fieldName,
+      localOptions,
+    });
+  };
+}
+
+export function UploadedFile () {
+  console.log('[debug]');
+  return function (target: object, method: PropertyKey, paramIdx: number) {
+    console.log('[debug]');
+    const funcParams = functionParams(target[method]);
+    const funcParamName = funcParams[paramIdx];
+    setControllerMethodParam(params, target, method, paramIdx, funcParamName);
+  };
+}
+
+export function UploadedFiles () {
+  console.log('[debug]');
+  return function (target: object, method: PropertyKey, paramIdx: number) {
+    console.log('[debug]');
+    const funcParams = functionParams(target[method]);
+    const funcParamName = funcParams[paramIdx];
+    setControllerMethodParam(params, target, method, paramIdx, funcParamName);
+  };
+}
