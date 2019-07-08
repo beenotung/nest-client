@@ -1,17 +1,21 @@
+import { postMultipartFormData } from '@beenotung/tslib/form';
 import axios from 'axios';
 import {
   bodies,
   getControllerMethodParams,
   getControllerMethodPath,
   getControllerPath,
+  getFileFieldName,
   hasControllerMethodParams,
   hasControllerMethodPath,
+  hasFileFieldName,
   params,
   setControllerMethodParam,
   setControllerMethodPath,
   setControllerPath,
+  setFileFieldName,
 } from './rest-states';
-import { functionParams } from './utils';
+import { functionParams, mapGetOrSet } from './utils';
 
 let defaultBaseUrl = '';
 
@@ -181,6 +185,26 @@ export function injectNestClient (
         baseUrl = options.baseUrl;
       }
       const url = baseUrl + localRestUrl;
+      if (hasFileFieldName(target, method)) {
+        if (restfulMethod !== 'post') {
+          console.warn(
+            'file must be sent via POST multipart-form, but the restfulMethod is',
+            restfulMethod,
+            '. auto switching to POST multipart-form',
+          );
+        }
+        return postMultipartFormData(url, data).then((res) => {
+          if (200 <= res.status && res.status < 300) {
+            try {
+              return JSON.parse(res.data.toString());
+            } catch (e) {
+              return res.data;
+            }
+          } else {
+            return Promise.reject(res);
+          }
+        });
+      }
       return axios
         .request({
           url,
@@ -216,58 +240,82 @@ export const Patch = restMethod('Patch');
 export function UseInterceptors (
   ...interceptors: Array<
     (target: object, key?: string, descriptor?: any) => void
-  >
+  >,
 ) {
-  console.log('[debug]');
   return function (target: object, key?: string, descriptor?: any) {
-    console.log('[debug]');
-    console.log({
-      target,
-      key,
-      descriptor,
-      interceptors,
-    });
     interceptors.forEach((interceptor) => interceptor(target, key, descriptor));
   };
 }
 
+/* target -> method -> listener[] */
+const fileHook = new Map<object, Map<PropertyKey, Array<() => void>>>();
+
+function addFileHook (
+  target: object,
+  method: PropertyKey,
+  listener: () => void,
+) {
+  mapGetOrSet(
+    mapGetOrSet(fileHook, target, () => new Map()),
+    method,
+    () => [],
+  ).push(listener);
+}
+
+function triggerFileHook (target: object, method: PropertyKey) {
+  mapGetOrSet(
+    mapGetOrSet(fileHook, target, () => new Map()),
+    method,
+    () => [],
+  ).forEach((listener) => listener());
+}
+
 export function FileInterceptor (fieldName: string, localOptions?: object) {
-  console.log('[debug]', 'FileInterceptor', fieldName);
-  return function (target: object, method: PropertyKey, paramIdx: number) {
-    console.log('[debug]');
+  return function (target: object, method: PropertyKey, descriptor?: any) {
+    setFileFieldName(target, method, fieldName);
+    triggerFileHook(target, method);
   };
 }
 
 export function FilesInterceptor (fieldName: string, localOptions?: object) {
-  console.log('[debug]', 'FilesInterceptor', fieldName);
-  return function (target: object, method: PropertyKey, paramIdx: number) {
-    console.log('[debug]');
-    console.log({
-      target,
-      method,
-      paramIdx,
-      fieldName,
-      localOptions,
-    });
+  return function (target: object, method: PropertyKey, descriptor?: any) {
+    setFileFieldName(target, method, fieldName);
+    triggerFileHook(target, method);
   };
 }
 
 export function UploadedFile () {
-  console.log('[debug]');
   return function (target: object, method: PropertyKey, paramIdx: number) {
-    console.log('[debug]');
     const funcParams = functionParams(target[method]);
     const funcParamName = funcParams[paramIdx];
-    setControllerMethodParam(params, target, method, paramIdx, funcParamName);
+    addFileHook(target, method, () => {
+      const fieldName = getFileFieldName(target, method);
+      return setControllerMethodParam(
+        params,
+        target,
+        method,
+        paramIdx,
+        funcParamName,
+        fieldName,
+      );
+    });
   };
 }
 
 export function UploadedFiles () {
-  console.log('[debug]');
   return function (target: object, method: PropertyKey, paramIdx: number) {
-    console.log('[debug]');
     const funcParams = functionParams(target[method]);
     const funcParamName = funcParams[paramIdx];
-    setControllerMethodParam(params, target, method, paramIdx, funcParamName);
+    addFileHook(target, method, () => {
+      const fieldName = getFileFieldName(target, method);
+      return setControllerMethodParam(
+        params,
+        target,
+        method,
+        paramIdx,
+        funcParamName,
+        fieldName,
+      );
+    });
   };
 }

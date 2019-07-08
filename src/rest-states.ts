@@ -22,6 +22,9 @@ export const bodies = new Map<
   Map<PropertyKey, Map<number, [string, string | undefined]>>
 >();
 
+/* class -> method -> fieldName */
+export const fileMap = new Map<object, Map<PropertyKey, string>>();
+
 export function setControllerPath (target: object, path: string) {
   controllers.set(target, path);
 }
@@ -118,4 +121,30 @@ export function getControllerMethodParams (
   method: PropertyKey,
 ): Map<number, [string, string]> {
   return chainF(mapGetOrSet, params, [[target], [method]]);
+}
+
+export function setFileFieldName (
+  target: object,
+  method: PropertyKey,
+  fieldName: string,
+) {
+  mapGetOrSet(fileMap, target, () => new Map()).set(method, fieldName);
+}
+export function getFileFieldName (target: object, method: PropertyKey): string {
+  if (!fileMap.has(target)) {
+    console.error('no file field, target:', target);
+    throw new Error('no file field on target');
+  }
+  const map = fileMap.get(target);
+  if (!map.has(method)) {
+    console.error('no file field:', { target, method });
+    throw new Error('no file field no target method');
+  }
+  return map.get(method);
+}
+export function hasFileFieldName (target: object, method: PropertyKey): boolean {
+  return (
+    mapGetOrSet(mapGetOrSet(fileMap, target, () => new Map()), method, () => [])
+      .length !== 0
+  );
 }

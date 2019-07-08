@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "clean": "rimraf dist",
+    "clean": "rimraf dist node_modules/@beenotung/tslib/index.*",
     "prebuild": "npm run clean",
     "build": "gen-index && tsc -p .",
     "prelint": "npm run format",
@@ -25,7 +25,6 @@
   ],
   "author": "Beeno Tung",
   "license": "BSD-2-Clause",
-  "peerDependencies": {},
   "devDependencies": {
     "@beenotung/gen-index": "^1.0.8",
     "@types/node": "^10.5.1",
@@ -37,6 +36,7 @@
     "typescript": "^2.9.2"
   },
   "dependencies": {
+    "@beenotung/tslib": "^14.20.0",
     "axios": "^0.18.0"
   },
   "repository": {
