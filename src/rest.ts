@@ -237,11 +237,12 @@ export const Put = restMethod('Put');
 export const Patch = restMethod('Patch');
 
 /* for multi-part form post to upload file(s) */
-export function UseInterceptors (
-  ...interceptors: Array<
-    (target: object, key?: string, descriptor?: any) => void
-  >,
-) {
+export type Interceptor = (
+  target: object,
+  method?: PropertyKey,
+  descriptor?: any,
+) => void;
+export function UseInterceptors (...interceptors: Interceptor[]) {
   return function (target: object, key?: string, descriptor?: any) {
     interceptors.forEach((interceptor) => interceptor(target, key, descriptor));
   };
@@ -270,14 +271,20 @@ function triggerFileHook (target: object, method: PropertyKey) {
   ).forEach((listener) => listener());
 }
 
-export function FileInterceptor (fieldName: string, localOptions?: object) {
+export function FileInterceptor (
+  fieldName: string,
+  localOptions?: object,
+): Interceptor {
   return function (target: object, method: PropertyKey, descriptor?: any) {
     setFileFieldName(target, method, fieldName);
     triggerFileHook(target, method);
   };
 }
 
-export function FilesInterceptor (fieldName: string, localOptions?: object) {
+export function FilesInterceptor (
+  fieldName: string,
+  localOptions?: object,
+): Interceptor {
   return function (target: object, method: PropertyKey, descriptor?: any) {
     setFileFieldName(target, method, fieldName);
     triggerFileHook(target, method);
