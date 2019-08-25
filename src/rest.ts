@@ -298,7 +298,7 @@ export function UploadedFile () {
     addFileHook(target, method, () => {
       const fieldName = getFileFieldName(target, method);
       return setControllerMethodParam(
-        params,
+        bodies,
         target,
         method,
         paramIdx,
@@ -316,7 +316,7 @@ export function UploadedFiles () {
     addFileHook(target, method, () => {
       const fieldName = getFileFieldName(target, method);
       return setControllerMethodParam(
-        params,
+        bodies,
         target,
         method,
         paramIdx,
