@@ -8,7 +8,7 @@
     "clean": "rimraf dist node_modules/@beenotung/tslib/index.*",
     "prebuild": "npm run clean",
     "build": "gen-index && tsc -p .",
-    "postbuild": "./build-lib",
+    "postbuild": "./post-build",
     "prelint": "npm run format",
     "lint": "tslint -p .",
     "format": "prettier --write \"src/**/*.ts\"",

@@ -1,0 +1,5 @@
+#!/bin/bash
+set -e
+node ./mk-package.js > dist/package.json
+cp README.md dist/
+echo "done post-build."
