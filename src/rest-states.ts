@@ -144,7 +144,10 @@ export function getFileFieldName (target: object, method: PropertyKey): string {
 }
 export function hasFileFieldName (target: object, method: PropertyKey): boolean {
   return (
-    mapGetOrSet(mapGetOrSet(fileMap, target, () => new Map()), method, () => [])
-      .length !== 0
+    mapGetOrSet(
+      mapGetOrSet(fileMap, target, () => new Map()),
+      method,
+      () => [],
+    ).length !== 0
   );
 }

@@ -171,9 +171,7 @@ export function injectNestClient (
                 `failed to replace ':${restParamName}' in '${localRestUrl}'`,
               );
               console.error(
-                `next one is :'${
-                  localRestUrl[idx + 1 + restParamName.length]
-                }'`,
+                `next one is :'${localRestUrl[idx + 1 + restParamName.length]}'`,
               );
               break;
           }
