@@ -3,6 +3,48 @@
 
 nest.js client stub library
 
+This allows almost no effort to make client SDK from the controller file.
+
+## Example (client side)
+```typescript
+import { Body, Controller, Get, injectNestClient, Param, Post, setBaseUrl } from "nest-client";
+
+setBaseUrl("http://127.0.0.1:3000"); // set the default baseUrl
+
+@Controller("animal")
+class Animal {
+  constructor() {
+    injectNestClient(this, {
+      baseUrl: "http://127.0.0.1:3000", // optional if called setBaseUrl()
+      allowNonRestMethods: true
+    });
+  }
+
+  @Post("talk")
+  talk(): any {
+    // these code will not be called, server response will be returned instead
+    console.log("talking manually");
+    return "manually";
+  }
+
+  @Get("name")
+  name(): any {
+  }
+
+  @Get("/get_echo/:Msg/:User")
+  get_echo(@Param("Msg")Msg, @Param("User")User) {
+  }
+
+  @Post("/post_echo")
+  post_echo(@Body("Msg")Msg) {
+  }
+
+  customMethod() {
+    return 'this method will not be override'
+  }
+}
+```
+
 ## Running the Example
 ```bash
 cd examples/server
