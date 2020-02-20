@@ -37,7 +37,7 @@
     "typescript": "^3.7.5"
   },
   "dependencies": {
-    "@beenotung/tslib": "^16.7.1",
+    "@beenotung/tslib": "^16.8.1",
     "axios": "^0.18.1"
   },
   "repository": {
