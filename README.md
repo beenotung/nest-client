@@ -3,7 +3,7 @@
 
 nest.js client stub library
 
-This allows almost no effort to make client SDK from the controller file.
+This allows almost no additioanl effort to make client SDK by coping from the nest.js controller file on the server codebase.
 
 ## Example (client side)
 ```typescript
