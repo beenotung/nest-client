@@ -1,5 +1,5 @@
 import { postMultipartFormData } from '@beenotung/tslib/form';
-import axios from 'axios';
+import axios, { AxiosInstance } from 'axios';
 import {
   bodies,
   getControllerMethodParams,
@@ -82,12 +82,14 @@ export function Body (bodyName?: string) {
 export interface NestClientOptions {
   allowNonRestMethods?: false | boolean;
   baseUrl?: string;
+  axiosInstance?: AxiosInstance;
 }
 
 export function injectNestClient (
   instance: object,
   options?: NestClientOptions,
 ) {
+  const axiosInstance: AxiosInstance = options.axiosInstance || axios;
   const target = Object.getPrototypeOf(instance);
   const controllerPath = getControllerPath(target.constructor);
   for (const method of Object.getOwnPropertyNames(target)) {
@@ -103,7 +105,7 @@ export function injectNestClient (
     }
     const [restMethod, methodPath] = getControllerMethodPath(target, method);
     const restfulMethod = restMethod.name.toLowerCase();
-    if (!axios[restfulMethod]) {
+    if (!axiosInstance[restfulMethod]) {
       console.error('unsupported restful method of', restfulMethod);
       throw new Error('unsupported restful method');
     }
@@ -171,7 +173,9 @@ export function injectNestClient (
                 `failed to replace ':${restParamName}' in '${localRestUrl}'`,
               );
               console.error(
-                `next one is :'${localRestUrl[idx + 1 + restParamName.length]}'`,
+                `next one is :'${
+                  localRestUrl[idx + 1 + restParamName.length]
+                }'`,
               );
               break;
           }
@@ -203,7 +207,7 @@ export function injectNestClient (
           }
         });
       }
-      return axios
+      return axiosInstance
         .request({
           url,
           method: restfulMethod,
