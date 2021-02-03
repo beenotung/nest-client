@@ -1,5 +1,5 @@
 import { postMultipartFormData } from '@beenotung/tslib/form';
-import axios, { AxiosInstance } from 'axios';
+import axios, { AxiosInstance, Method } from 'axios';
 import {
   bodies,
   getControllerMethodParams,
@@ -104,7 +104,7 @@ export function injectNestClient (
       continue;
     }
     const [restMethod, methodPath] = getControllerMethodPath(target, method);
-    const restfulMethod = restMethod.name.toLowerCase();
+    const restfulMethod = restMethod.name.toLowerCase() as Method;
     if (!axiosInstance[restfulMethod]) {
       console.error('unsupported restful method of', restfulMethod);
       throw new Error('unsupported restful method');
