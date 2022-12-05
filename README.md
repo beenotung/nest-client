@@ -5,6 +5,8 @@ nest.js client stub library
 
 This allows almost no additioanl effort to make client SDK by coping from the nest.js controller file in the server codebase.
 
+Tips: you can auto generate the client stub using [nest-gen](https://www.npmjs.com/package/nest-gen)
+
 ## Example (client side)
 ```typescript
 import { Body, Controller, Get, injectNestClient, Param, Post, setBaseUrl } from "nest-client";
@@ -16,7 +18,7 @@ class Animal {
   constructor() {
     injectNestClient(this, {
       baseUrl: "http://127.0.0.1:3000", // optional if called setBaseUrl()
-      allowNonRestMethods: true
+      allowNonRestMethods: true // default false
     });
   }
 
