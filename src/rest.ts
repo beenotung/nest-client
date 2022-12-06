@@ -293,6 +293,23 @@ export function FilesInterceptor (
   };
 }
 
+export interface MulterField {
+  name: string
+  maxCount?: number
+}
+
+export function FileFieldsInterceptor (
+  uploadFields: MulterField[],
+  localOptions?: object,
+): Interceptor {
+  return function (target: object, method: PropertyKey, descriptor?: any) {
+    uploadFields.forEach(field => {
+      setFileFieldName(target, method, field.name)
+      triggerFileHook(target, method)
+    })
+  }
+}
+
 export function UploadedFile () {
   return function (target: object, method: PropertyKey, paramIdx: number) {
     const funcParams = functionParams(target[method]);
