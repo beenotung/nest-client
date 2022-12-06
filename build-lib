@@ -3,5 +3,5 @@ set -e
 pnpm i --prefer-offline || npm i
 npm run build
 node ./mk-package.js > dist/package.json
-cp README.md dist/
+cp README.md LICENSE dist/
 echo "done build-lib."
