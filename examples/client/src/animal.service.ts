@@ -1,34 +1,45 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  injectNestClient,
+  Param,
+  Post
+} from 'nest-client';
 
 @Controller('animal')
-export class AnimalController {
+export class AnimalService {
+  constructor(baseUrl: string) {
+    injectNestClient(this, {
+      baseUrl,
+      allowNonRestMethods: true
+    });
+  }
+
   @Post('talk')
   async talk(): Promise<string> {
-    return 'this animal is talking';
+    return null as any;
   }
 
   @Get('name')
   async name(): Promise<{ type: string; value: string }> {
-    return {
-      type: 'string',
-      value: 'animal name',
-    };
+    return null as any;
   }
 
   @Get('/echo/:channel/:topic')
   async getEcho(
     @Param('channel') channel: string,
-    @Param('topic') topic: string,
+    @Param('topic') topic: string
   ): Promise<Echo> {
-    return { channel, topic };
+    return null as any;
   }
 
   @Post('/echo')
   async postEcho(
     @Body('channel') channel: string,
-    @Body('topic') topic: string,
+    @Body('topic') topic: string
   ): Promise<Echo> {
-    return { channel, topic };
+    return null as any;
   }
 }
 

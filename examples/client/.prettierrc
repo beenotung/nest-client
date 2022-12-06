@@ -1,16 +1,4 @@
 {
   "singleQuote": true,
-  "jsxSingleQuote": false,
-  "overrides": [
-    {
-      "files": [
-        "*.scss",
-        "*.css"
-      ],
-      "options": {
-        "singleQuote": false
-      }
-    }
-  ],
-  "trailingComma": "all"
+  "semi": true
 }

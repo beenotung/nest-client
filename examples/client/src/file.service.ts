@@ -1,39 +1,54 @@
 import {
-  Body,
   Controller,
-  FileInterceptor,
-  FilesInterceptor,
-  Get,
   injectNestClient,
-  Param,
   Post,
   UploadedFile,
   UploadedFiles,
-  UseInterceptors,
+  UseInterceptors
 } from 'nest-client';
-
-/* tslint:disable:no-unused-variable */
+import {
+  FileFieldsInterceptor,
+  FileInterceptor,
+  FilesInterceptor
+} from 'nest-client';
 
 @Controller('file')
 export class FileService {
-  baseUrl: string;
-
   constructor(baseUrl: string) {
     injectNestClient(this, {
       baseUrl,
-      allowNonRestMethods: true,
+      allowNonRestMethods: true
     });
-    this.baseUrl = baseUrl;
   }
 
   @Post('single')
   @UseInterceptors(FileInterceptor('file'))
-  postSingleFile(
-    @UploadedFile() _file: File,
-  ): Promise<string> {
-    return undefined as any;
+  async single(
+    @UploadedFile() file?: File
+  ): Promise<{ mimetype: string; size: number; filename: string }> {
+    return null as any;
   }
-  
-}
 
-/* tslint:enable:no-unused-variable */
+  @Post('array')
+  @UseInterceptors(FilesInterceptor('files'))
+  async array(@UploadedFiles() files: File[]): Promise<string[]> {
+    return null as any;
+  }
+
+  @Post('multiple')
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'avatar', maxCount: 1 },
+      { name: 'background', maxCount: 1 }
+    ])
+  )
+  async multiple(
+    @UploadedFiles()
+    files: {
+      avatar?: File[];
+      background?: File[];
+    }
+  ): Promise<{ avatar: string; background: string }> {
+    return null as any;
+  }
+}
