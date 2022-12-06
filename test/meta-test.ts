@@ -21,12 +21,12 @@ class Animal {
   name(): any {
   }
 
-  @Get("/get_echo/:Msg/:User")
-  get_echo(@Param("Msg")Msg, @Param("User")User) {
+  @Get("/echo/:channel/:topic")
+  get_echo(@Param("channel")channel, @Param("topic")topic) {
   }
 
-  @Post("/post_echo")
-  post_echo(@Body("Msg")Msg) {
+  @Post("/echo")
+  post_echo(@Body("channel")channel) {
   }
 
   customMethod() {
