@@ -9,11 +9,8 @@
     "prebuild": "npm run clean",
     "build": "gen-index && tsc -p .",
     "postbuild": "./post-build",
-    "prelint": "npm run format",
-    "lint": "tslint -p .",
     "format": "prettier --write \"src/**/*.ts\"",
-    "postformat": "tslint -p . --fix",
-    "pretest": "run-s build lint",
+    "pretest": "run-s build",
     "test": "ts-node test/meta-test.ts"
   },
   "keywords": [
@@ -32,8 +29,6 @@
     "npm-run-all": "^4.1.5",
     "prettier": "^1.19.1",
     "rimraf": "^2.7.1",
-    "tslint": "^5.20.1",
-    "tslint-eslint-rules": "^5.4.0",
     "typescript": "^3.7.5"
   },
   "dependencies": {
