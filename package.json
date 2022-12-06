@@ -21,7 +21,11 @@
     "rest",
     "restful"
   ],
-  "author": "Beeno Tung",
+  "author": {
+    "name": "Beeno Tung",
+    "email": "aabbcc1241@yahoo.com.hk",
+    "url": "https://beeno-tung.surge.sh"
+  },
   "license": "BSD-2-Clause",
   "devDependencies": {
     "@beenotung/gen-index": "^1.2.1",
