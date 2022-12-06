@@ -1,5 +1,5 @@
-import { postMultipartFormData } from '@beenotung/tslib/form';
-import axios, { AxiosInstance, Method } from 'axios';
+import { postMultipartFormData } from "@beenotung/tslib/form";
+import axios, { AxiosInstance, Method } from "axios";
 import {
   bodies,
   getControllerMethodParams,
@@ -14,31 +14,31 @@ import {
   setControllerMethodPath,
   setControllerPath,
   setFileFieldName,
-} from './rest-states';
-import { functionParams, mapGetOrSet } from './utils';
+} from "./rest-states";
+import { functionParams, mapGetOrSet } from "./utils";
 
-let defaultBaseUrl = '';
+let defaultBaseUrl = "";
 
-export function setBaseUrl (url: string) {
-  if (url.endsWith('/')) {
+export function setBaseUrl(url: string) {
+  if (url.endsWith("/")) {
     url = url.substr(0, url.length - 1);
   }
   defaultBaseUrl = url;
 }
 
-export function Controller (path: string) {
+export function Controller(path: string) {
   return function (target: object) {
     setControllerPath(target, path);
   };
 }
 
-function restMethod (name: string) {
+function restMethod(name: string) {
   const f = function (path: string) {
     return function (target: object, method: PropertyKey) {
       setControllerMethodPath(target, method, f, path);
     };
   };
-  Object.defineProperty(f, 'name', { value: name, writable: false });
+  Object.defineProperty(f, "name", { value: name, writable: false });
   return f;
 }
 
@@ -49,7 +49,7 @@ export function Res() {
 }
 */
 
-export function Param (restParamName: string) {
+export function Param(restParamName: string) {
   return function (target: object, method: PropertyKey, paramIdx: number) {
     const funcParams = functionParams(target[method]);
     const funcParamName = funcParams[paramIdx];
@@ -64,7 +64,7 @@ export function Param (restParamName: string) {
   };
 }
 
-export function Body (bodyName?: string) {
+export function Body(bodyName?: string) {
   return function (target: object, method: PropertyKey, paramIdx: number) {
     const funcParams = functionParams(target[method]);
     const funcParamName = funcParams[paramIdx];
@@ -85,7 +85,7 @@ export interface NestClientOptions {
   axiosInstance?: AxiosInstance;
 }
 
-export function injectNestClient (
+export function injectNestClient(
   instance: object,
   options?: NestClientOptions,
 ) {
@@ -93,7 +93,7 @@ export function injectNestClient (
   const target = Object.getPrototypeOf(instance);
   const controllerPath = getControllerPath(target.constructor);
   for (const method of Object.getOwnPropertyNames(target)) {
-    if (method === 'constructor') {
+    if (method === "constructor") {
       continue;
     }
     if (
@@ -106,12 +106,12 @@ export function injectNestClient (
     const [restMethod, methodPath] = getControllerMethodPath(target, method);
     const restfulMethod = restMethod.name.toLowerCase() as Method;
     if (!axiosInstance[restfulMethod]) {
-      console.error('unsupported restful method of', restfulMethod);
-      throw new Error('unsupported restful method');
+      console.error("unsupported restful method of", restfulMethod);
+      throw new Error("unsupported restful method");
     }
-    const restUrl = ('/' + controllerPath + '/' + methodPath).replace(
+    const restUrl = ("/" + controllerPath + "/" + methodPath).replace(
       /\/\//g,
-      '/',
+      "/",
     );
     const oriMethod = instance[method];
     const oriParams = functionParams(oriMethod);
@@ -126,12 +126,12 @@ export function injectNestClient (
         } else if (hasControllerMethodParams(bodies, target, method)) {
           ps = bodies;
         } else {
-          console.error('missing param decorators', {
+          console.error("missing param decorators", {
             target: target.name,
             method,
             arguments,
           });
-          throw new Error('missing param decorators');
+          throw new Error("missing param decorators");
         }
 
         /* for GET */
@@ -141,7 +141,7 @@ export function injectNestClient (
           const paramValue = arguments[i];
           const [paramName, restParamName] = map.get(i);
           if (paramName !== oriParamName) {
-            console.warn('unmatched param name', { oriParamName, paramName });
+            console.warn("unmatched param name", { oriParamName, paramName });
           }
 
           /* for post */
@@ -155,13 +155,13 @@ export function injectNestClient (
           }
 
           /* for get */
-          const idx = localRestUrl.indexOf(':' + restParamName);
+          const idx = localRestUrl.indexOf(":" + restParamName);
           if (idx === -1) {
             continue;
           }
           switch (localRestUrl[idx + 1 + restParamName.length]) {
-            case ':':
-            case '/':
+            case ":":
+            case "/":
             case undefined:
               localRestUrl =
                 localRestUrl.substring(0, idx) +
@@ -188,14 +188,14 @@ export function injectNestClient (
       }
       const url = baseUrl + localRestUrl;
       if (hasFileFieldName(target, method)) {
-        if (restfulMethod !== 'post') {
+        if (restfulMethod !== "post") {
           console.warn(
-            'file must be sent via POST multipart-form, but the restfulMethod is',
+            "file must be sent via POST multipart-form, but the restfulMethod is",
             restfulMethod,
-            '. auto switching to POST multipart-form',
+            ". auto switching to POST multipart-form",
           );
         }
-        return postMultipartFormData(url, data).then((res) => {
+        return postMultipartFormData(url, data).then(res => {
           if (200 <= res.status && res.status < 300) {
             try {
               return JSON.parse(res.data.toString());
@@ -213,7 +213,7 @@ export function injectNestClient (
           method: restfulMethod,
           data,
         })
-        .then((response) => {
+        .then(response => {
           if (200 <= response.status && response.status < 300) {
             return response.data;
           } else {
@@ -228,15 +228,15 @@ export function injectNestClient (
 export let injectMethods = injectNestClient;
 
 /* without data */
-export const Delete = restMethod('Delete');
-export const Get = restMethod('Get');
-export const Head = restMethod('Head');
-export const Options = restMethod('Options');
+export const Delete = restMethod("Delete");
+export const Get = restMethod("Get");
+export const Head = restMethod("Head");
+export const Options = restMethod("Options");
 
 /* with data */
-export const Post = restMethod('Post');
-export const Put = restMethod('Put');
-export const Patch = restMethod('Patch');
+export const Post = restMethod("Post");
+export const Put = restMethod("Put");
+export const Patch = restMethod("Patch");
 
 /* for multi-part form post to upload file(s) */
 export type Interceptor = (
@@ -244,16 +244,16 @@ export type Interceptor = (
   method?: PropertyKey,
   descriptor?: any,
 ) => void;
-export function UseInterceptors (...interceptors: Interceptor[]) {
+export function UseInterceptors(...interceptors: Interceptor[]) {
   return function (target: object, key?: string, descriptor?: any) {
-    interceptors.forEach((interceptor) => interceptor(target, key, descriptor));
+    interceptors.forEach(interceptor => interceptor(target, key, descriptor));
   };
 }
 
 /* target -> method -> listener[] */
 const fileHook = new Map<object, Map<PropertyKey, Array<() => void>>>();
 
-function addFileHook (
+function addFileHook(
   target: object,
   method: PropertyKey,
   listener: () => void,
@@ -265,15 +265,15 @@ function addFileHook (
   ).push(listener);
 }
 
-function triggerFileHook (target: object, method: PropertyKey) {
+function triggerFileHook(target: object, method: PropertyKey) {
   mapGetOrSet(
     mapGetOrSet(fileHook, target, () => new Map()),
     method,
     () => [],
-  ).forEach((listener) => listener());
+  ).forEach(listener => listener());
 }
 
-export function FileInterceptor (
+export function FileInterceptor(
   fieldName: string,
   localOptions?: object,
 ): Interceptor {
@@ -283,7 +283,7 @@ export function FileInterceptor (
   };
 }
 
-export function FilesInterceptor (
+export function FilesInterceptor(
   fieldName: string,
   localOptions?: object,
 ): Interceptor {
@@ -294,23 +294,23 @@ export function FilesInterceptor (
 }
 
 export interface MulterField {
-  name: string
-  maxCount?: number
+  name: string;
+  maxCount?: number;
 }
 
-export function FileFieldsInterceptor (
+export function FileFieldsInterceptor(
   uploadFields: MulterField[],
   localOptions?: object,
 ): Interceptor {
   return function (target: object, method: PropertyKey, descriptor?: any) {
     uploadFields.forEach(field => {
-      setFileFieldName(target, method, field.name)
-      triggerFileHook(target, method)
-    })
-  }
+      setFileFieldName(target, method, field.name);
+      triggerFileHook(target, method);
+    });
+  };
 }
 
-export function UploadedFile () {
+export function UploadedFile() {
   return function (target: object, method: PropertyKey, paramIdx: number) {
     const funcParams = functionParams(target[method]);
     const funcParamName = funcParams[paramIdx];
@@ -328,7 +328,7 @@ export function UploadedFile () {
   };
 }
 
-export function UploadedFiles () {
+export function UploadedFiles() {
   return function (target: object, method: PropertyKey, paramIdx: number) {
     const funcParams = functionParams(target[method]);
     const funcParamName = funcParams[paramIdx];
