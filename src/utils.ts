@@ -2,7 +2,7 @@ export const genMap = () => new Map();
 
 export function mapGetOrSet<K, V>(map: Map<K, V>, key: K, f: () => V) {
   if (map.has(key)) {
-    return map.get(key);
+    return map.get(key)!;
   }
   if (!f) {
     console.error("failed to find", key, "in", map);

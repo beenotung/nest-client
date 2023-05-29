@@ -21,7 +21,7 @@ let defaultBaseUrl = "";
 
 export function setBaseUrl(url: string) {
   if (url.endsWith("/")) {
-    url = url.substr(0, url.length - 1);
+    url = url.slice(0, url.length - 1);
   }
   defaultBaseUrl = url;
 }
@@ -42,15 +42,10 @@ function restMethod(name: string) {
   return f;
 }
 
-/*
-export function Res() {
-  return function (target, method, param) {
-  }
-}
-*/
+type Dict = Record<PropertyKey, any>;
 
 export function Param(restParamName: string) {
-  return function (target: object, method: PropertyKey, paramIdx: number) {
+  return function (target: Dict, method: PropertyKey, paramIdx: number) {
     const funcParams = functionParams(target[method]);
     const funcParamName = funcParams[paramIdx];
     setControllerMethodParam(
@@ -65,7 +60,7 @@ export function Param(restParamName: string) {
 }
 
 export function Body(bodyName?: string) {
-  return function (target: object, method: PropertyKey, paramIdx: number) {
+  return function (target: Dict, method: PropertyKey, paramIdx: number) {
     const funcParams = functionParams(target[method]);
     const funcParamName = funcParams[paramIdx];
     setControllerMethodParam(
@@ -85,11 +80,9 @@ export interface NestClientOptions {
   axiosInstance?: AxiosInstance;
 }
 
-export function injectNestClient(
-  instance: object,
-  options?: NestClientOptions,
-) {
-  const axiosInstance: AxiosInstance = options && options.axiosInstance ? options.axiosInstance : axios;
+export function injectNestClient(instance: Dict, options?: NestClientOptions) {
+  const axiosInstance: AxiosInstance =
+    options && options.axiosInstance ? options.axiosInstance : axios;
   const target = Object.getPrototypeOf(instance);
   const controllerPath = getControllerPath(target.constructor);
   for (const method of Object.getOwnPropertyNames(target)) {
@@ -105,7 +98,7 @@ export function injectNestClient(
     }
     const [restMethod, methodPath] = getControllerMethodPath(target, method);
     const restfulMethod = restMethod.name.toLowerCase() as Method;
-    if (!axiosInstance[restfulMethod]) {
+    if (!axiosInstance[restfulMethod as keyof AxiosInstance]) {
       console.error("unsupported restful method of", restfulMethod);
       throw new Error("unsupported restful method");
     }
@@ -117,7 +110,7 @@ export function injectNestClient(
     const oriParams = functionParams(oriMethod);
     instance[method] = function () {
       let localRestUrl = restUrl;
-      let data = {};
+      let data = {} as Dict;
 
       if (oriParams.length > 0) {
         let ps: Map<any, any>;
@@ -139,7 +132,7 @@ export function injectNestClient(
         for (let i = 0; i < arguments.length; i++) {
           const oriParamName = oriParams[i];
           const paramValue = arguments[i];
-          const [paramName, restParamName] = map.get(i);
+          const [paramName, restParamName] = map.get(i)!;
           if (paramName !== oriParamName) {
             console.warn("unmatched param name", { oriParamName, paramName });
           }
@@ -198,7 +191,7 @@ export function injectNestClient(
         return postMultipartFormData(url, data).then(res => {
           if (200 <= res.status && res.status < 300) {
             try {
-              return JSON.parse(res.data.toString());
+              return JSON.parse(String(res.data));
             } catch (e) {
               return res.data;
             }
@@ -241,17 +234,18 @@ export const Patch = restMethod("Patch");
 /* for multi-part form post to upload file(s) */
 export type Interceptor = (
   target: object,
-  method?: PropertyKey,
-  descriptor?: any,
+  method: PropertyKey,
+  descriptor: any,
 ) => void;
 export function UseInterceptors(...interceptors: Interceptor[]) {
-  return function (target: object, key?: string, descriptor?: any) {
+  return function (target: object, key: string, descriptor?: any) {
     interceptors.forEach(interceptor => interceptor(target, key, descriptor));
   };
 }
 
 /* target -> method -> listener[] */
-const fileHook = new Map<object, Map<PropertyKey, Array<() => void>>>();
+const fileHook = new Map<object, FileMethodHooks>();
+type FileMethodHooks = Map<PropertyKey, Array<() => void>>;
 
 function addFileHook(
   target: object,
@@ -259,7 +253,7 @@ function addFileHook(
   listener: () => void,
 ) {
   mapGetOrSet(
-    mapGetOrSet(fileHook, target, () => new Map()),
+    mapGetOrSet(fileHook, target, () => new Map() as FileMethodHooks),
     method,
     () => [],
   ).push(listener);
@@ -267,7 +261,7 @@ function addFileHook(
 
 function triggerFileHook(target: object, method: PropertyKey) {
   mapGetOrSet(
-    mapGetOrSet(fileHook, target, () => new Map()),
+    mapGetOrSet(fileHook, target, () => new Map() as FileMethodHooks),
     method,
     () => [],
   ).forEach(listener => listener());
@@ -311,7 +305,7 @@ export function FileFieldsInterceptor(
 }
 
 export function UploadedFile() {
-  return function (target: object, method: PropertyKey, paramIdx: number) {
+  return function (target: Dict, method: PropertyKey, paramIdx: number) {
     const funcParams = functionParams(target[method]);
     const funcParamName = funcParams[paramIdx];
     addFileHook(target, method, () => {
@@ -329,7 +323,7 @@ export function UploadedFile() {
 }
 
 export function UploadedFiles() {
-  return function (target: object, method: PropertyKey, paramIdx: number) {
+  return function (target: Dict, method: PropertyKey, paramIdx: number) {
     const funcParams = functionParams(target[method]);
     const funcParamName = funcParams[paramIdx];
     addFileHook(target, method, () => {

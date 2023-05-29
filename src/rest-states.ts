@@ -34,7 +34,7 @@ export function getControllerPath(target: object): string {
     console.error("controller", target, "is not registered");
     throw new Error("unregistered controller");
   }
-  return controllers.get(target);
+  return controllers.get(target)!;
 }
 
 export function setControllerMethodPath(
@@ -57,11 +57,11 @@ export function hasControllerMethodPath(
   if (!methods.has(target)) {
     return false;
   }
-  const m = methods.get(target);
+  const m = methods.get(target)!;
   if (!m.has(method)) {
     return false;
   }
-  return m.get(method).size > 0;
+  return m.get(method)!.size > 0;
 }
 
 export function getControllerMethodPath(
@@ -100,7 +100,7 @@ export function setControllerMethodParam(
   const map = chainF(mapGetOrSet, params, [
     [target, genMap],
     [method, genMap],
-  ]) as Map<number, [string, string]>;
+  ]) as Map<number, [string, string?]>;
   map.set(paramIdx, [paramName, restParamName]);
 }
 
@@ -135,12 +135,12 @@ export function getFileFieldName(target: object, method: PropertyKey): string {
     console.error("no file field, target:", target);
     throw new Error("no file field on target");
   }
-  const map = fileMap.get(target);
+  const map = fileMap.get(target)!;
   if (!map.has(method)) {
     console.error("no file field:", { target, method });
     throw new Error("no file field no target method");
   }
-  return map.get(method);
+  return map.get(method)!;
 }
 export function hasFileFieldName(target: object, method: PropertyKey): boolean {
   return (
