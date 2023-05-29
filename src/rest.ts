@@ -89,7 +89,7 @@ export function injectNestClient(
   instance: object,
   options?: NestClientOptions,
 ) {
-  const axiosInstance: AxiosInstance = options.axiosInstance || axios;
+  const axiosInstance: AxiosInstance = options && options.axiosInstance ? options.axiosInstance : axios;
   const target = Object.getPrototypeOf(instance);
   const controllerPath = getControllerPath(target.constructor);
   for (const method of Object.getOwnPropertyNames(target)) {
