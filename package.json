@@ -9,7 +9,7 @@
     "prebuild": "npm run clean",
     "build": "gen-index && tsc -p .",
     "postbuild": "./post-build",
-    "format": "prettier --write \"src/**/*.ts\" && format-json-cli",
+    "format": "prettier --write \"{src,test}/**/*.ts\" && format-json-cli",
     "pretest": "run-s build",
     "test": "ts-node test/meta-test.ts"
   },

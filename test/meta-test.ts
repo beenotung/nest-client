@@ -1,4 +1,12 @@
-import { Body, Controller, Get, injectNestClient, Param, Post, setBaseUrl } from "../src";
+import {
+  Body,
+  Controller,
+  Get,
+  injectNestClient,
+  Param,
+  Post,
+  setBaseUrl,
+} from "../src";
 
 setBaseUrl("http://127.0.0.1:3000"); // set the default baseUrl
 
@@ -7,7 +15,7 @@ class Animal {
   constructor() {
     injectNestClient(this, {
       baseUrl: "http://127.0.0.1:3000", // optional if called setBaseUrl()
-      allowNonRestMethods: true
+      allowNonRestMethods: true,
     });
   }
 
@@ -18,16 +26,13 @@ class Animal {
   }
 
   @Get("name")
-  name(): any {
-  }
+  name(): any {}
 
   @Get("/echo/:channel/:topic")
-  get_echo(@Param("channel")channel, @Param("topic")topic) {
-  }
+  get_echo(@Param("channel") channel: string, @Param("topic") topic: string) {}
 
   @Post("/echo")
-  post_echo(@Body("channel")channel) {
-  }
+  post_echo(@Body("channel") channel: string) {}
 
   customMethod() {
     return "this method will not be override";
@@ -36,12 +41,12 @@ class Animal {
 
 let animal = new Animal();
 
-function log(o: object, method: string, args: any[]) {
+function log(o: Record<string, any>, method: string, args: any[]) {
   o[method](...args)
-    .then(response => {
+    .then((response: any) => {
       console.log(method, { response });
     })
-    .catch(response => {
+    .catch((response: any) => {
       console.error(method, { response });
     });
 }
