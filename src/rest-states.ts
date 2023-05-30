@@ -5,7 +5,7 @@
 /* class -> path */
 import { chainF, genMap, mapGetOrSet } from "./utils";
 
-const controllers = new Map<object, string>();
+const controllers = new Map<object, string | undefined>();
 
 /* class -> method -> rest method -> path */
 const methods = new Map<object, Map<PropertyKey, Map<Function, string>>>();
@@ -25,7 +25,7 @@ export const bodies = new Map<
 /* class -> method -> fieldName */
 export const fileMap = new Map<object, Map<PropertyKey, string>>();
 
-export function setControllerPath(target: object, path: string) {
+export function setControllerPath(target: object, path: string | undefined) {
   controllers.set(target, path);
 }
 
@@ -41,12 +41,12 @@ export function setControllerMethodPath(
   target: object,
   method: PropertyKey,
   restMethod: Function,
-  path: string,
+  path: string | undefined,
 ) {
   const map = chainF(mapGetOrSet, methods, [
     [target, genMap],
     [method, genMap],
-  ]) as Map<Function, string>;
+  ]) as Map<Function, string | undefined>;
   map.set(restMethod, path);
 }
 

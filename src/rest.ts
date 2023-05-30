@@ -26,14 +26,14 @@ export function setBaseUrl(url: string) {
   defaultBaseUrl = url;
 }
 
-export function Controller(path: string) {
+export function Controller(path?: string) {
   return function (target: object) {
     setControllerPath(target, path);
   };
 }
 
 function restMethod(name: string) {
-  const f = function (path: string) {
+  const f = function (path?: string) {
     return function (target: object, method: PropertyKey) {
       setControllerMethodPath(target, method, f, path);
     };
