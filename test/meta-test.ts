@@ -19,6 +19,9 @@ class Animal {
     });
   }
 
+  @Get()
+  list(): any {}
+
   @Post("talk")
   talk(): any {
     console.log("talking manually");
@@ -50,6 +53,8 @@ function log(o: Record<string, any>, method: string, args: any[]) {
       console.error(method, { response });
     });
 }
+
+log(animal, "list", []);
 
 log(animal, "talk", []);
 log(animal, "name", []);

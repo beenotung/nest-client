@@ -41,12 +41,12 @@ export function setControllerMethodPath(
   target: object,
   method: PropertyKey,
   restMethod: Function,
-  path: string | undefined,
+  path: string,
 ) {
   const map = chainF(mapGetOrSet, methods, [
     [target, genMap],
     [method, genMap],
-  ]) as Map<Function, string | undefined>;
+  ]) as Map<Function, string>;
   map.set(restMethod, path);
 }
 

@@ -2,6 +2,11 @@ import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 
 @Controller('animal')
 export class AnimalController {
+  @Get()
+  async list(): Promise<string[]> {
+    return ['the', 'path', 'is', 'optional'];
+  }
+
   @Post('talk')
   async talk(): Promise<string> {
     return 'this animal is talking';

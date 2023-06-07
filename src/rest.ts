@@ -33,7 +33,7 @@ export function Controller(path?: string) {
 }
 
 function restMethod(name: string) {
-  const f = function (path?: string) {
+  const f = function (path: string = "") {
     return function (target: object, method: PropertyKey) {
       setControllerMethodPath(target, method, f, path);
     };
